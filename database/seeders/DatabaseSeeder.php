@@ -26,9 +26,9 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::firstOrCreate(
+            User::updateOrCreate(
                 ['email' => $user['email']],
-                [...$user, 'entity_id' => $entity->id, 'password' => 'password'],
+                [...$user, 'entity_id' => $entity->id, 'password' => 'password', 'is_active' => true],
             );
         }
 
