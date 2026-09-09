@@ -37,6 +37,10 @@ export default function Login({
             <p className="mt-1 text-sm text-ink-muted">
                 Accédez à votre espace tickets et parc.
             </p>
+            <p className="mt-3 rounded-md bg-mist px-3 py-2 text-sm text-ink">
+                Démo : <span className="font-medium">admin@parc.local</span> /{' '}
+                <span className="font-medium">password</span>
+            </p>
 
             {status && (
                 <div className="mt-4 text-sm font-medium text-ok">{status}</div>
