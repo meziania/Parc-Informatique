@@ -11,6 +11,9 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    ->withCommands([
+        \App\Console\Commands\EnsureDemoUsersCommand::class,
+    ])
     ->withMiddleware(function (Middleware $middleware): void {
         // Tunnel Cloudflare / reverse proxy (démo soutenance en HTTPS)
         $middleware->trustProxies(at: '*');

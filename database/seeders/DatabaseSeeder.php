@@ -26,10 +26,16 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::updateOrCreate(
-                ['email' => $user['email']],
-                [...$user, 'entity_id' => $entity->id, 'password' => 'password', 'is_active' => true],
-            );
+            if (User::query()->where('email', $user['email'])->exists()) {
+                continue;
+            }
+
+            User::query()->create([
+                ...$user,
+                'entity_id' => $entity->id,
+                'password' => 'password',
+                'is_active' => true,
+            ]);
         }
 
         $this->call([
