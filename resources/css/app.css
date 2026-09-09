@@ -1,0 +1,77 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --ink: #0f1c24;
+    --ink-muted: #5b6b76;
+    --brand: #0d9488;
+    --brand-strong: #0f766e;
+    --brand-soft: #ccfbf1;
+    --surface: #ffffff;
+    --surface-muted: #f1f5f7;
+    --mist: #e8eef1;
+    --line: #d5dee5;
+    --danger: #dc2626;
+    --warn: #ea580c;
+    --ok: #059669;
+    --radius: 0.75rem;
+    --shadow: 0 1px 2px rgb(15 28 36 / 0.06), 0 8px 24px rgb(15 28 36 / 0.04);
+}
+
+@layer base {
+    body {
+        @apply bg-mist text-ink antialiased;
+        font-feature-settings: 'ss01' on;
+    }
+
+    ::selection {
+        background: color-mix(in srgb, var(--brand) 35%, white);
+        color: var(--ink);
+    }
+}
+
+@layer components {
+    .ui-focus {
+        @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2;
+    }
+
+    .ui-input {
+        @apply w-full rounded-lg border-line bg-white text-sm text-ink shadow-sm ui-focus focus:border-brand;
+        &::placeholder {
+            color: color-mix(in srgb, var(--ink-muted) 70%, transparent);
+        }
+    }
+
+    .ui-label {
+        @apply mb-1 block text-sm font-medium text-ink;
+    }
+
+    .fade-in {
+        animation: fadeIn 0.45s ease both;
+    }
+
+    .slide-up {
+        animation: slideUp 0.5s ease both;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
