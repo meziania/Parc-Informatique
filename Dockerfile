@@ -23,4 +23,4 @@ RUN composer install --no-dev --optimize-autoloader --no-interaction --no-script
     && mkdir -p storage/framework/cache storage/framework/sessions storage/framework/views storage/logs bootstrap/cache \
     && chmod -R 777 storage bootstrap/cache
 
-CMD sh -c "php artisan storage:link --force || true; php artisan migrate --force; php artisan db:seed --force || true; php artisan gpsi:demo-users; php artisan serve --host=0.0.0.0 --port=${PORT:-8080}"
+CMD ["sh", "deploy-start.sh"]

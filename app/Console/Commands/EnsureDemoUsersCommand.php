@@ -6,36 +6,50 @@ use App\Enums\UserRole;
 use App\Models\Entity;
 use App\Models\User;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class EnsureDemoUsersCommand extends Command
 {
     protected $signature = 'gpsi:demo-users';
 
-    protected $description = 'Crée ou réactive les 3 comptes de démo (mot de passe: password)';
+    protected $description = 'Crée ou réactive les comptes de démonstration et affiche l\'état de la base';
 
     public function handle(): int
     {
+        $connection = DB::connection();
+
+        $this->line('DB connexion : '.$connection->getName().' / '.$connection->getDatabaseName());
+
+        if (! Schema::hasTable('users')) {
+            $this->error('Table users absente : les migrations n\'ont pas abouti.');
+
+            return self::FAILURE;
+        }
+
+        $password = (string) env('DEMO_PASSWORD', 'password');
         $entity = Entity::query()->firstOrCreate(['name' => 'Organisation principale']);
 
-        $users = [
+        $accounts = [
             ['name' => 'Admin Parc', 'email' => 'admin@parc.local', 'role' => UserRole::Admin],
             ['name' => 'Technicien Parc', 'email' => 'technicien@parc.local', 'role' => UserRole::Technician],
             ['name' => 'Utilisateur Parc', 'email' => 'utilisateur@parc.local', 'role' => UserRole::User],
         ];
 
-        foreach ($users as $user) {
+        foreach ($accounts as $account) {
             User::query()->updateOrCreate(
-                ['email' => $user['email']],
+                ['email' => $account['email']],
                 [
-                    ...$user,
+                    ...$account,
                     'entity_id' => $entity->id,
-                    'password' => 'password',
+                    'password' => $password,
                     'is_active' => true,
+                    'email_verified_at' => now(),
                 ],
             );
         }
 
-        $this->info('Comptes démo OK : admin@parc.local / technicien@parc.local / utilisateur@parc.local');
+        $this->info('Comptes prêts : '.User::query()->count().' utilisateurs en base.');
 
         return self::SUCCESS;
     }
