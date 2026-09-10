@@ -10,9 +10,11 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->timestamp('due_at')->nullable()->after('closed_at')->index();
-        });
+        if (! Schema::hasColumn('tickets', 'due_at')) {
+            Schema::table('tickets', function (Blueprint $table) {
+                $table->timestamp('due_at')->nullable()->after('closed_at')->index();
+            });
+        }
 
         $hours = [
             TicketPriority::Urgent->value => 4,
@@ -21,20 +23,28 @@ return new class extends Migration
             TicketPriority::Low->value => 72,
         ];
 
+        $driver = Schema::getConnection()->getDriverName();
+
         foreach ($hours as $priority => $slaHours) {
+            $sql = $driver === 'pgsql'
+                ? "created_at + interval '{$slaHours} hours'"
+                : "datetime(created_at, '+{$slaHours} hours')";
+
             DB::table('tickets')
                 ->where('priority', $priority)
                 ->whereNull('due_at')
                 ->update([
-                    'due_at' => DB::raw("created_at + interval '{$slaHours} hours'"),
+                    'due_at' => DB::raw($sql),
                 ]);
         }
     }
 
     public function down(): void
     {
-        Schema::table('tickets', function (Blueprint $table) {
-            $table->dropColumn('due_at');
-        });
+        if (Schema::hasColumn('tickets', 'due_at')) {
+            Schema::table('tickets', function (Blueprint $table) {
+                $table->dropColumn('due_at');
+            });
+        }
     }
 };

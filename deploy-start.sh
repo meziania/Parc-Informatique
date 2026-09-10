@@ -2,8 +2,10 @@
 set -e
 
 if [ -n "$DATABASE_URL" ]; then
-  export DB_CONNECTION="${DB_CONNECTION:-pgsql}"
-  export DB_URL="${DB_URL:-$DATABASE_URL}"
+  export DB_CONNECTION=pgsql
+  export DB_URL="$DATABASE_URL"
+elif [ -n "$DB_URL" ]; then
+  export DB_CONNECTION=pgsql
 fi
 
 export SESSION_DRIVER="${SESSION_DRIVER:-file}"
@@ -12,6 +14,8 @@ export QUEUE_CONNECTION="${QUEUE_CONNECTION:-sync}"
 
 php artisan config:clear || true
 php artisan storage:link --force || true
+
+echo "DB_CONNECTION=${DB_CONNECTION:-sqlite}"
 
 php artisan migrate --force
 php artisan gpsi:demo-users
